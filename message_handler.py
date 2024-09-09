@@ -1,4 +1,4 @@
-from pyiso8583 import Iso8583
+from iso8583 import Iso8583
 
 
 def message_handler(message):
