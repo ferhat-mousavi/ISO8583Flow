@@ -1,5 +1,5 @@
 import sys
-from iso8583.IsoErrors import *
+from iso8583.iso_errors import *
 import struct
 import binascii
 import ebcdic
