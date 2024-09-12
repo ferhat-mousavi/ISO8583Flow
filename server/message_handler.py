@@ -1,4 +1,3 @@
-from iso8583 import Iso8583
 from server.message_processor import ISO8583Message
 from server.mti_definition import transaction_routes
 
