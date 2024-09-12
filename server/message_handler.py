@@ -23,8 +23,10 @@ class ISO8583MessageHandler(ISO8583Message):
             transaction_type = transaction_routes[transaction_key]
             match transaction_type:
                 case "Sale":
+                    # Execute the logic for Sale transaction
                     self.process_sale()
                 case "InstallmentSale":
+                    # Execute the logic for Installment Sale transaction
                     self.process_installment_sale()
                 case "PreAuthorization":
                     # Execute the logic for PreAuthorization transaction
