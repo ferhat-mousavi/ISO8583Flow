@@ -1,23 +1,21 @@
 from iso8583 import Iso8583
+from server.message_processor import ISO8583Message
 from server.mti_definition import transaction_routes
 
 
-class ISO8583MessageHandler:
+class ISO8583MessageHandler(ISO8583Message):
     def __init__(self):
-        self.iso_request_message = None
-        self.iso_response_message = None
-        pass
+        super().__init__()
 
     def message_handler(self, request_message):
-        self.iso_request_message = Iso8583()
-        self.iso_response_message = Iso8583()
-        self.iso_request_message.setIsoContent(request_message)
+        self.set_request_message(request_message)
+
         # Log the incoming message (optional)
         print("Incoming ISO 8583 Message:")
-        print(self.iso_request_message.getIsoContent())
+        print(self.get_iso_request_message().getIsoContent())
 
-        mti = self.iso_request_message.getMTI()
-        processing_code = self.iso_request_message.getBit(3)
+        mti = self.get_iso_request_message().getMTI()
+        processing_code = self.get_iso_request_message().getBit(3)
 
         transaction_key = (mti, processing_code)
 
@@ -105,10 +103,10 @@ class ISO8583MessageHandler:
                     self.process_independent_refund_cancellation_technical_cancel()
                 case _:
                     # Handle unknown transaction types
-                    self.iso_response_message = self.handle_unknown_transaction(mti)
+                    self.handle_unknown_transaction(mti)
 
         # Pack the message and return it
-        return self.iso_response_message.getRawIso()
+        return self.get_iso_response_message().getRawIso()
 
     def handle_unknown_transaction(self, mti):
         if len(mti) >= 3 and mti[2].isdigit():
@@ -119,6 +117,6 @@ class ISO8583MessageHandler:
             response_mti = mti[0:2] + new_third_digit + mti[3:]
         else:
             response_mti = mti  # If input is invalid, return the original string
-        self.iso_response_message.setMTI(response_mti)  # Transaction response MTI
-        self.iso_response_message.setBit(3, '000000')  # Processing code
-        self.iso_response_message.setBit(39, '12')  # Invalid Transaction response code
+        self.get_iso_response_message().setMTI(response_mti)  # Transaction response MTI
+        self.get_iso_response_message().setBit(3, '000000')  # Processing code
+        self.get_iso_response_message().setBit(39, '12')  # Invalid Transaction response code
